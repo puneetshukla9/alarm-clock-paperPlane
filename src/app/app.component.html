@@ -1,0 +1,61 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div *ngIf="currentTime && currentTime.hour">
+  Current Time:
+
+  <h1> {{currentTime.hour+':'+currentTime.min+":"+currentTime.sec+" "+currentTime.am_pm}}</h1>
+  <p-button label="Alarm" (onClick)="onAlarmClick($event)"></p-button>
+</div>
+<p-dialog header="Alarm Details" [(visible)]="showAlarmList" [style]="{width: '850px', minWidth: '200px'}"
+  [modal]="true" [responsive]="true" [maximizable]="false" [contentStyle]="{'overflow':'visible'}">
+  <div [style]="{position: relative}">
+    <div>Set Alarm</div>
+    <span>Time
+      <p-dropdown [options]="hours" appendTo="body" placeholder="Select Hour" [(ngModel)]="alarmTime.hour"></p-dropdown>
+    </span>
+    <span class="seprator"><strong>:</strong></span>
+    <p-dropdown [options]="minutes" appendTo="body" placeholder="Select Minutes" [(ngModel)]="alarmTime.min">
+    </p-dropdown>
+    <span class="seprator"></span>
+    <p-dropdown [options]="amPm" appendTo="body" [(ngModel)]="alarmTime.am_pm"></p-dropdown>
+
+    <div class="on-days-wrapper">
+      <span>On Days
+        <p-multiSelect [options]="noOfDays" [(ngModel)]="onDays"></p-multiSelect>
+      </span>
+    </div>
+
+    <p-button label="Set Alarm" [disabled]="!alarmTime.hour || !alarmTime.min || !onDays.length"
+      (onClick)="onSetAlarmClick($event)">
+    </p-button>
+  </div>
+  <div>
+    <ng-container *ngIf='alarmList.alarmDetails.length'>
+      <p-table [value]="alarmList.alarmDetails">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Time</th>
+            <th>Days</th>
+            <th>Action</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-alarm>
+          <tr>
+            <td>{{alarm.alarmTime.hour+':'+alarm.alarmTime.min+' '+alarm.alarmTime.am_pm}}</td>
+            <td>{{getAlarmStatus(alarm)}}</td>
+            <td>
+              <p-button [label]="alarm.status === alarmStatusEnum.ACTIVE?'Switch Off':'Switch On'" (onClick)="changeStatus(alarm)">
+              </p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-container>
+    <ng-container *ngIf='!alarmList.alarmDetails.length'> No Alarm Added</ng-container>
+  </div>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="showAlarmList=false" label="Close"></button>
+
+  </p-footer>
+</p-dialog>
+
+<router-outlet></router-outlet>

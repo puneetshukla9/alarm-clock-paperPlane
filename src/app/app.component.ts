@@ -18,6 +18,7 @@ export class AppComponent {
   alarmTime: Time = new Time();
   alarmList: AlarmDetails = new AlarmDetails();
   alarmStatusEnum = AlarmStatus;
+  showAlarmPlaying = false;
 
   constructor() {
 
@@ -27,14 +28,14 @@ export class AppComponent {
     this.hours = [...Array(12).keys()].map(x => {
       return {
         label: String(this.appendZero(++x)),
-        value: String(this.appendZero(++x))
+        value: String(this.appendZero(x))
       };
 
     });
     this.minutes = [...Array(60).keys()].map(x => {
       return {
         label: String(this.appendZero(++x)),
-        value: String(this.appendZero(++x))
+        value: String(this.appendZero(x))
       };
 
     });
@@ -49,9 +50,14 @@ export class AppComponent {
     this.showCurrentTime();
   }
 
+  // gets the current time and coverts it to 12 hour format
   showCurrentTime() {
     this.currentTime = new Time();
     const currentTime = this.currentTime;
+    let prev = {
+      hour: -1,
+      min: -1
+    }
     let interVal = setInterval(() => {
       currentTime.hour = new Date().getHours();
       currentTime.min = new Date().getMinutes();
@@ -69,16 +75,25 @@ export class AppComponent {
       currentTime.hour = this.appendZero(currentTime.hour);
       currentTime.min = this.appendZero(currentTime.min);
       currentTime.sec = this.appendZero(currentTime.sec);
+      if (prev.hour !== currentTime.hour || prev.min !== currentTime.min) {
+        prev.hour = currentTime.hour;
+        prev.min = currentTime.min;
+        this.checkAlarmStatus();
+      }
     }, 1000);
   }
 
+  // convert single digit number to double digit
+  // for eg: 1 to 01
   appendZero(no): number {
     return no > 9 ? no : '0' + no;
   }
 
+  // show alarm list popup
   onAlarmClick() {
     this.showAlarmList = true;
   }
+  // add alarm
   onSetAlarmClick() {
     let nAlarm = new AlarmDetail(true);
     nAlarm.alarmTime.hour = this.alarmTime.hour;
@@ -88,6 +103,7 @@ export class AppComponent {
     this.alarmList.alarmDetails.push(nAlarm);
     this.resetAlarm();
   }
+
   //reset the alarm values
   resetAlarm() {
     this.alarmTime = new Time();
@@ -120,5 +136,19 @@ export class AppComponent {
     } else if (alarm.status === AlarmStatus.INACTIVE) {
       alarm.status = AlarmStatus.ACTIVE;
     }
+  }
+
+  checkAlarmStatus() {
+    const currentTime = this.currentTime;
+    this.alarmList.alarmDetails.forEach(alarmDetail => {
+
+      if (alarmDetail.status === AlarmStatus.ACTIVE &&
+        Number(alarmDetail.alarmTime.hour) === Number(currentTime.hour) &&
+        Number(alarmDetail.alarmTime.min) === Number(currentTime.min) &&
+        alarmDetail.alarmTime.am_pm === currentTime.am_pm) {
+        alarmDetail.status = AlarmStatus.PLAYING;
+        this.showAlarmPlaying = true;
+      }
+    });
   }
 }

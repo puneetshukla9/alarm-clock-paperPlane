@@ -10,16 +10,16 @@ export class AlarmClockService {
   alarmListState: Array<AlarmDetail> = [];
   currentDay: string;
   _interval: any;
+  prev = {
+    hour: -1,
+    min: -1
+  };
   constructor(private router: Router) { }
 
   // gets the current time and coverts it to 12 hour format
   showCurrentTime() {
     this.currentTime = new Time();
     const currentTime = this.currentTime;
-    const prev = {
-      hour: -1,
-      min: -1
-    }
     const weekday = new Array(7);
     weekday[0] = 'Sunday';
     weekday[1] = 'Monday';
@@ -51,9 +51,10 @@ export class AlarmClockService {
       currentTime.hour = this.appendZero(currentTime.hour);
       currentTime.min = this.appendZero(currentTime.min);
       currentTime.sec = this.appendZero(currentTime.sec);
-      if (prev.hour !== currentTime.hour || prev.min !== currentTime.min) {
-        prev.hour = currentTime.hour;
-        prev.min = currentTime.min;
+      //condition is checked so the checkAlarmStatus function is not called every sec. 
+      if (this.prev.hour !== currentTime.hour || this.prev.min !== currentTime.min) {
+        this.prev.hour = currentTime.hour;
+        this.prev.min = currentTime.min;
         this.checkAlarmStatus();
       }
     }, 1000);
@@ -89,7 +90,7 @@ export class AlarmClockService {
     const currentTime = this.currentTime;
     this.alarmListState.forEach(alarmDetail => {
 
-      if (alarmDetail.status === AlarmStatus.ACTIVE &&
+      if (alarmDetail.status !== AlarmStatus.INACTIVE &&
         Number(alarmDetail.alarmTime.hour) === Number(currentTime.hour) &&
         Number(alarmDetail.alarmTime.min) === Number(currentTime.min) &&
         alarmDetail.alarmTime.am_pm === currentTime.am_pm &&

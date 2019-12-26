@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AlarmClockService } from '../alarm-clock.service';
 import { AlarmDetail, Time, AlarmStatus } from '../alarm-clock.model';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-alarm-configure',
@@ -16,6 +17,8 @@ export class AlarmConfigureComponent implements OnInit {
   onDays: Array<string> = [];
   alarmListState: Array<AlarmDetail>;
   alarmStatusEnum = AlarmStatus;
+  alarmBtnClick = false;
+  editAlarmFlag = false;
   constructor(public alarmService: AlarmClockService) { }
 
   ngOnInit() {
@@ -43,7 +46,10 @@ export class AlarmConfigureComponent implements OnInit {
       this.amPm = [{ label: 'AM', value: 'AM' }, { label: 'PM', value: 'PM' }];
     this.alarmListState = this.alarmService.alarmListState;
   }
-
+  onAlarmBtnClick() {
+    this.resetAlarm();
+    this.alarmBtnClick = true;
+  }
   // add alarm
   onSetAlarmClick() {
     let nAlarm = new AlarmDetail(true);
@@ -53,6 +59,8 @@ export class AlarmConfigureComponent implements OnInit {
     nAlarm.onDays = this.onDays;
     this.alarmService.alarmListState.push(nAlarm);
     this.resetAlarm();
+    this.editAlarmFlag = false;
+    this.alarmBtnClick = false;
     console.log(this.alarmListState);
   }
 
@@ -60,10 +68,18 @@ export class AlarmConfigureComponent implements OnInit {
   resetAlarm() {
     this.alarmTime = new Time();
     this.onDays = [];
+    this.editAlarmFlag = false;
   }
-
-  
-
+  editAlarm(alarm: AlarmDetail) {
+    this.alarmTime.hour = _.cloneDeep(alarm.alarmTime.hour);
+    this.alarmTime.min = _.cloneDeep(alarm.alarmTime.min);
+    this.alarmTime.am_pm = _.cloneDeep(alarm.alarmTime.am_pm);
+    this.onDays = _.cloneDeep(alarm.onDays);
+    this.editAlarmFlag = true;
+  }
+  deleteAlarm(alarm: AlarmDetail, index: number) {
+    this.alarmService.alarmListState.splice(index, 1);
+  }
   changeStatus(alarm: AlarmDetail) {
     if (alarm.status === AlarmStatus.ACTIVE) {
       alarm.status = AlarmStatus.INACTIVE;

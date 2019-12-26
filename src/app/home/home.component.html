@@ -1,18 +1,20 @@
-<h1>Alarm App</h1>
-<div class="jumbotron text-center" *ngIf="currentTime && currentTime.hour">
+<div class="container">
+  <h1>Alarm App</h1>
+  <div class="jumbotron text-center" *ngIf="currentTime && currentTime.hour">
 
-  <span>
-    Current Date:
-    <h2>{{currentDate}}</h2>
-  </span>
+    <span>
+      Current Date:
+      <h2>{{currentDate}}</h2>
+    </span>
 
-  <span>
-    Current Time:
-    <h2> {{currentTime.hour+':'+currentTime.min+":"+currentTime.sec+" "+currentTime.am_pm}}</h2>
-  </span>
+    <span>
+      Current Time:
+      <h2> {{currentTime.hour+':'+currentTime.min+":"+currentTime.sec+" "+currentTime.am_pm}}</h2>
+    </span>
 
-  <p-button label="Alarm" (onClick)="onAlarmClick($event)"></p-button>
-</div>
-<div class="jumbotron text-center" *ngIf="!currentTime.hour">
-  <h2>Loading...</h2>
+    <p-button label="Alarm" (onClick)="onAlarmClick($event)"></p-button>
+  </div>
+  <div class="jumbotron text-center" *ngIf="!currentTime.hour">
+    <h2>Loading...</h2>
+  </div>
 </div>

@@ -1,6 +1,12 @@
-<div class="container-fluid">
-    <div class="container set-alarm-wrapper">
+<div class="container">
+    <div class="container">
         <h2>Set Alarm</h2>
+        <p-button label="Add Alarm" [disabled]="alarmBtnClick || editAlarmFlag" (onClick)="onAlarmBtnClick($event)">
+        </p-button>
+
+    </div>
+    <div class="container set-alarm-wrapper" *ngIf="alarmBtnClick || editAlarmFlag">
+
         <div class="form-group">
             <label for="time">
                 <h5>Time:</h5>
@@ -15,9 +21,6 @@
             <p-dropdown [options]="amPm" appendTo="body" [(ngModel)]="alarmTime.am_pm"></p-dropdown>
         </div>
 
-
-
-
         <div class="form-group">
             <label for="time">
                 <h5>On Days:</h5>
@@ -28,11 +31,15 @@
 
         </div>
 
-        <p-button label="Set Alarm" [disabled]="!alarmTime.hour || !alarmTime.min || !onDays.length"
-            (onClick)="onSetAlarmClick($event)">
+        <p-button [label]="editAlarmFlag?'Update Alarm':'Set Alarm'" [styleClass]="'ui-button-raised'"
+            [disabled]="!alarmTime.hour || !alarmTime.min || !onDays.length" (onClick)="onSetAlarmClick($event)">
         </p-button>
+
+        <p-button class='custom-btn' label="Cancel" (onClick)="resetAlarm(); alarmBtnClick=false"
+            [styleClass]="'ui-button-raised ui-button-secondary '"></p-button>
+
     </div>
-    <div class="container">
+    <div class="container alarm-list-wrapper">
         <ng-container *ngIf='alarmListState.length'>
             <h3>Existing Alarm</h3>
             <p-table [value]="alarmListState">
@@ -44,14 +51,20 @@
                         <th>Status</th>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-alarm>
+                <ng-template pTemplate="body" let-alarm let-index="rowIndex">
                     <tr>
-                        <td [ngClass]="{'disable':alarm.status === alarmStatusEnum.INACTIVE}">{{alarm.alarmTime.hour+':'+alarm.alarmTime.min+' '+alarm.alarmTime.am_pm}}</td>
-                        <td [ngClass]="{'disable':alarm.status === alarmStatusEnum.INACTIVE}">{{alarmService.getAlarmStatus(alarm)}}</td>
+                        <td [ngClass]="{'disable':alarm.status === alarmStatusEnum.INACTIVE}">
+                            {{alarm.alarmTime.hour+':'+alarm.alarmTime.min+' '+alarm.alarmTime.am_pm}}</td>
+                        <td [ngClass]="{'disable':alarm.status === alarmStatusEnum.INACTIVE}">
+                            {{alarmService.getAlarmStatus(alarm)}}</td>
                         <td>
-                            <p-button [label]="alarm.status === alarmStatusEnum.ACTIVE?'Switch Off':'Switch On'"
+                            <p-button class='custom-btn' icon="pi pi-power-off"
+                                [label]="alarm.status === alarmStatusEnum.ACTIVE?'Off':'On'"
                                 (onClick)="changeStatus(alarm)">
                             </p-button>
+                            <p-button class='custom-btn' icon="pi pi-pencil" (onClick)="editAlarm(alarm)"></p-button>
+                            <p-button class='custom-btn' icon="pi pi-trash" (onClick)="deleteAlarm(alarm,index)"></p-button>
+
                         </td>
                         <td [ngClass]="{'disable':alarm.status === alarmStatusEnum.INACTIVE}">{{alarm.status}}</td>
                     </tr>

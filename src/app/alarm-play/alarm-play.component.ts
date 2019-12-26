@@ -11,7 +11,7 @@ import { AlarmClockService } from '../alarm-clock.service';
 export class AlarmPlayComponent implements OnInit {
   alarmStatusEnum = AlarmStatus;
   constructor(private router: Router, public alarmService: AlarmClockService) { }
-
+  audio: HTMLAudioElement;
   ngOnInit() {
     let playingFlag = false;
     this.alarmService.alarmListState.forEach(alarmDetail => {
@@ -28,17 +28,21 @@ export class AlarmPlayComponent implements OnInit {
 
   }
   playAudio() {
-    const audio = new Audio();
-    audio.src = '../../../assets/alarm.wav';
-    audio.load();
-    audio.play();
+    this.audio = new Audio();
+    this.audio.src = '../../../assets/audio.mp3';
+    this.audio.load();
+    this.audio.play();
   }
   stopAlarm() {
     this.changeStatus(AlarmStatus.STOPPED);
+    this.audio.pause();
+    this.audio = null;
     this.router.navigate(['/home']);
   }
   snoozeAlarm() {
     this.changeStatus(AlarmStatus.SNOOZED);
+    this.audio.pause();
+    this.audio = null;
     this.router.navigate(['/home']);
   }
   changeStatus(status: AlarmStatus) {

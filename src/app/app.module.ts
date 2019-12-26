@@ -9,9 +9,15 @@ import { DialogModule } from 'primeng/dialog';
 import {DropdownModule} from 'primeng/dropdown';
 import {MultiSelectModule} from 'primeng/multiselect';
 import {TableModule} from 'primeng/table';
+import { HomeComponent } from './home/home.component';
+import { AlarmConfigureComponent } from './alarm-configure/alarm-configure.component';
+import { AlarmPlayComponent } from './alarm-play/alarm-play.component';
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent,
+    AlarmConfigureComponent,
+    AlarmPlayComponent
   ],
   imports: [
     BrowserModule,

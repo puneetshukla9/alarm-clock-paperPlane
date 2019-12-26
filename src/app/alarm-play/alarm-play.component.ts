@@ -10,12 +10,16 @@ import { AlarmClockService } from '../alarm-clock.service';
 })
 export class AlarmPlayComponent implements OnInit {
   alarmStatusEnum = AlarmStatus;
+  showSnooze = true;
   constructor(private router: Router, public alarmService: AlarmClockService) { }
   audio: HTMLAudioElement;
   ngOnInit() {
     let playingFlag = false;
     this.alarmService.alarmListState.forEach(alarmDetail => {
       if (alarmDetail.status === AlarmStatus.PLAYING) {
+        if (!alarmDetail.isSnooze) {
+          this.showSnooze = false;
+        }
         playingFlag = true;
         return;
       }

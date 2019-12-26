@@ -12,6 +12,7 @@ import {TableModule} from 'primeng/table';
 import { HomeComponent } from './home/home.component';
 import { AlarmConfigureComponent } from './alarm-configure/alarm-configure.component';
 import { AlarmPlayComponent } from './alarm-play/alarm-play.component';
+import {CheckboxModule} from 'primeng/checkbox';
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +29,8 @@ import { AlarmPlayComponent } from './alarm-play/alarm-play.component';
     DialogModule,
     DropdownModule,
     MultiSelectModule,
-    TableModule
+    TableModule,
+    CheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -3,7 +3,8 @@
         <h2>Set Alarm</h2>
         <p-button label="Add Alarm" [disabled]="alarmBtnClick || editAlarmFlag" (onClick)="onAlarmBtnClick($event)">
         </p-button>
-
+        <a [ngStyle]="{float:'right'}" routerLink="/home" routerLinkActive="active">Home
+        </a>
     </div>
     <div class="container set-alarm-wrapper" *ngIf="alarmBtnClick || editAlarmFlag">
 
@@ -12,27 +13,41 @@
                 <h5>Time:</h5>
             </label>
             <span class="seprator"></span>
-            <p-dropdown [options]="hours" appendTo="body" placeholder="Select Hour" [(ngModel)]="alarmTime.hour">
+            <p-dropdown [options]="hours" appendTo="body" placeholder="Select Hour"
+                [(ngModel)]="newAlarm.alarmTime.hour">
             </p-dropdown>
             <span class="seprator"><strong>:</strong></span>
-            <p-dropdown [options]="minutes" appendTo="body" placeholder="Select Minutes" [(ngModel)]="alarmTime.min">
+            <p-dropdown [options]="minutes" appendTo="body" placeholder="Select Minutes"
+                [(ngModel)]="newAlarm.alarmTime.min">
             </p-dropdown>
             <span class="seprator"></span>
-            <p-dropdown [options]="amPm" appendTo="body" [(ngModel)]="alarmTime.am_pm"></p-dropdown>
+            <p-dropdown [options]="amPm" appendTo="body" [(ngModel)]="newAlarm.alarmTime.am_pm"></p-dropdown>
+        </div>
+        <div class="form-group">
+            <label for="time">
+                <h5>Snooze:</h5>
+            </label>
+            <span [ngStyle]="{'margin-left':'5px'}">
+                <p-checkbox [(ngModel)]="newAlarm.isSnooze" binary="true"></p-checkbox>
+            </span>
+
         </div>
 
         <div class="form-group">
-            <label for="time">
+
+            <label for="time" [ngStyle]="{float:'left','padding-top':'5px','margin-right':'5px'}">
                 <h5>On Days:</h5>
             </label>
             <span>
-                <p-multiSelect [styleClass]="'days-dd'" [options]="noOfDays" [(ngModel)]="onDays"></p-multiSelect>
+                <p-multiSelect [styleClass]="'days-dd'" [options]="noOfDays" [(ngModel)]="newAlarm.onDays">
+                </p-multiSelect>
             </span>
 
         </div>
 
         <p-button [label]="editAlarmFlag?'Update Alarm':'Set Alarm'" [styleClass]="'ui-button-raised'"
-            [disabled]="!alarmTime.hour || !alarmTime.min || !onDays.length" (onClick)="onSetAlarmClick($event)">
+            [disabled]="!newAlarm.alarmTime.hour || !newAlarm.alarmTime.min || !newAlarm.onDays.length"
+            (onClick)="onSetAlarmClick($event)">
         </p-button>
 
         <p-button class='custom-btn' label="Cancel" (onClick)="resetAlarm(); alarmBtnClick=false"
@@ -53,20 +68,22 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-alarm let-index="rowIndex">
                     <tr>
-                        <td [ngClass]="{'disable':alarm.status === alarmStatusEnum.INACTIVE}">
+                        <td [ngClass]="{'disable':(alarm.status === alarmStatusEnum.INACTIVE || alarm.status === alarmStatusEnum.STOPPED || alarm.status === alarmStatusEnum.SNOOZED)}">
                             {{alarm.alarmTime.hour+':'+alarm.alarmTime.min+' '+alarm.alarmTime.am_pm}}</td>
-                        <td [ngClass]="{'disable':alarm.status === alarmStatusEnum.INACTIVE}">
+                        <td [ngClass]="{'disable':(alarm.status === alarmStatusEnum.INACTIVE || alarm.status === alarmStatusEnum.STOPPED || alarm.status === alarmStatusEnum.SNOOZED)}">
                             {{alarmService.getAlarmStatus(alarm)}}</td>
                         <td>
                             <p-button class='custom-btn' icon="pi pi-power-off"
                                 [label]="alarm.status === alarmStatusEnum.ACTIVE?'Off':'On'"
                                 (onClick)="changeStatus(alarm)">
                             </p-button>
-                            <p-button class='custom-btn' icon="pi pi-pencil" (onClick)="editAlarm(alarm)"></p-button>
-                            <p-button class='custom-btn' icon="pi pi-trash" (onClick)="deleteAlarm(alarm,index)"></p-button>
+                            <p-button class='custom-btn' icon="pi pi-pencil" (onClick)="editAlarm(alarm,index)">
+                            </p-button>
+                            <p-button class='custom-btn' icon="pi pi-trash" (onClick)="deleteAlarm(alarm,index)">
+                            </p-button>
 
                         </td>
-                        <td [ngClass]="{'disable':alarm.status === alarmStatusEnum.INACTIVE}">{{alarm.status}}</td>
+                        <td [ngClass]="{'disable':(alarm.status === alarmStatusEnum.INACTIVE || alarm.status === alarmStatusEnum.STOPPED || alarm.status === alarmStatusEnum.SNOOZED)}">{{alarm.status}}</td>
                     </tr>
                 </ng-template>
             </p-table>

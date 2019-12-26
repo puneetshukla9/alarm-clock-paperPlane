@@ -15,10 +15,12 @@ export class AlarmDetail {
     alarmTime: Time;
     status: AlarmStatus;
     onDays: Array<string>;
+    isSnooze: boolean;
     constructor(initialize) {
         if (initialize) {
             this.alarmTime = new Time();
             this.status = AlarmStatus.ACTIVE;
+            this.isSnooze = true;
             this.onDays = [];
         }
     }

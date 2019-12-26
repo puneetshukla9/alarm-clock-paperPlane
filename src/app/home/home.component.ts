@@ -21,7 +21,9 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.alarmService.showCurrentTime();
     this.currentTime = this.alarmService.currentTime;
-    this.currentDate = new Date().toISOString().slice(0,10);;
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+
+    this.currentDate = new Date().toLocaleDateString('en-US', options);
   }
   onAlarmClick() {
     this.router.navigate(['/configure-alarm']);

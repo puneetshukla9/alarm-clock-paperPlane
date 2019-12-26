@@ -17,7 +17,7 @@
         </ng-template>
     </p-table>
     <div class='btn-wrapper'>
-        <p-button class='snz-btn' label="Snooze All" (onClick)="snoozeAlarm(alarm)">
+        <p-button class='snz-btn' *ngIf="showSnooze" label="Snooze All" (onClick)="snoozeAlarm(alarm)">
         </p-button>
         <p-button label="Stop All" (onClick)="stopAlarm(alarm)">
         </p-button>

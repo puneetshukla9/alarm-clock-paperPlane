@@ -9,7 +9,7 @@ import * as _ from 'lodash';
   styleUrls: ['./alarm-configure.component.scss']
 })
 export class AlarmConfigureComponent implements OnInit {
-  alarmTime: Time = new Time();
+  newAlarm: AlarmDetail = new AlarmDetail(true);
   hours: Array<{ label: string, value: string }>;
   minutes: Array<{ label: string, value: string }>;
   amPm: Array<{ label: string, value: string }>;
@@ -19,6 +19,7 @@ export class AlarmConfigureComponent implements OnInit {
   alarmStatusEnum = AlarmStatus;
   alarmBtnClick = false;
   editAlarmFlag = false;
+  updateIndex: number;
   constructor(public alarmService: AlarmClockService) { }
 
   ngOnInit() {
@@ -44,38 +45,45 @@ export class AlarmConfigureComponent implements OnInit {
     { label: 'Friday', value: 'Friday' },
     { label: 'Saturday', value: 'Saturday' }],
       this.amPm = [{ label: 'AM', value: 'AM' }, { label: 'PM', value: 'PM' }];
+    if (!this.alarmService.currentTime || !this.alarmService.currentTime.hour) {
+      this.alarmService.showCurrentTime();
+    }
+
     this.alarmListState = this.alarmService.alarmListState;
   }
   onAlarmBtnClick() {
     this.resetAlarm();
     this.alarmBtnClick = true;
   }
-  // add alarm
+  // add or update alarm
   onSetAlarmClick() {
-    let nAlarm = new AlarmDetail(true);
-    nAlarm.alarmTime.hour = this.alarmTime.hour;
-    nAlarm.alarmTime.min = this.alarmTime.min;
-    nAlarm.alarmTime.am_pm = this.alarmTime.am_pm;
-    nAlarm.onDays = this.onDays;
-    this.alarmService.alarmListState.push(nAlarm);
+    if (this.editAlarmFlag) {
+      this.alarmService.alarmListState[this.updateIndex] = _.cloneDeep(this.newAlarm);
+    } else {
+      let nAlarm = new AlarmDetail(true);
+      nAlarm.alarmTime.hour = this.newAlarm.alarmTime.hour;
+      nAlarm.alarmTime.min = this.newAlarm.alarmTime.min;
+      nAlarm.alarmTime.am_pm = this.newAlarm.alarmTime.am_pm;
+      nAlarm.onDays = this.newAlarm.onDays;
+      nAlarm.isSnooze = this.newAlarm.isSnooze;
+      this.alarmService.alarmListState.push(nAlarm);
+    }
     this.resetAlarm();
     this.editAlarmFlag = false;
     this.alarmBtnClick = false;
-    console.log(this.alarmListState);
   }
 
   //reset the alarm values
   resetAlarm() {
-    this.alarmTime = new Time();
+    this.newAlarm = new AlarmDetail(true);
     this.onDays = [];
     this.editAlarmFlag = false;
   }
-  editAlarm(alarm: AlarmDetail) {
-    this.alarmTime.hour = _.cloneDeep(alarm.alarmTime.hour);
-    this.alarmTime.min = _.cloneDeep(alarm.alarmTime.min);
-    this.alarmTime.am_pm = _.cloneDeep(alarm.alarmTime.am_pm);
-    this.onDays = _.cloneDeep(alarm.onDays);
+  editAlarm(alarm: AlarmDetail, index: number) {
+    this.updateIndex = index;
+    this.newAlarm = _.cloneDeep(alarm);
     this.editAlarmFlag = true;
+
   }
   deleteAlarm(alarm: AlarmDetail, index: number) {
     this.alarmService.alarmListState.splice(index, 1);
